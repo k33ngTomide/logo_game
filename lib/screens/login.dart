@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'signup.dart'; // Import SignupScreen
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _login() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> users = prefs.getStringList('users') ?? [];
+
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    bool isAuthenticated = users.any((user) {
+      Map<String, dynamic> userData = jsonDecode(user);
+      return (userData['email'] == email || userData['username'] == email) && userData['password'] == password;
+    });
+
+    if (isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login successful!')),
+      );
+      // Navigate to the next screen (e.g., home screen)
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email/username or password.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,19 +47,19 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const TextField(
-              decoration: InputDecoration(labelText: 'Email'),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email or Username'),
             ),
             const SizedBox(height: 10),
-            const TextField(
+            TextField(
+              controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Implement login logic
-              },
+              onPressed: _login,
               child: const Text('Login'),
             ),
             TextButton(
