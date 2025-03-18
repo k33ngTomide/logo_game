@@ -1,0 +1,20 @@
+{
+  "food": [
+    { "image": "https://example.com/mcdonalds.png", "answer": ["McDonald's"] },
+    { "image": "https://example.com/kfc.png", "answer": ["KFC"] }
+  ],
+  "tech": [
+    { "image": "https://example.com/apple.png", "answer": ["Apple"] },
+    { "image": "https://example.com/microsoft.png", "answer": ["Microsoft"] }
+  ],
+  "sport": [
+    {
+      "image": "https://www.jetpunk.com/img/user-img/51/51cb1ce904-450.webp",
+      "answer": ["Barcelona", "FCB", "Barca"]
+    },
+    {
+      "image": "  https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtZ_UZuhm9j5CfUOZC5mW7tFCjnsqJh0obGi4LKwFevnxdKAM_4VHDRneRLTpY1KcM49c&usqp=CAU",
+      "answer": ["Madrid", "Real Madrid"]
+    }
+  ]
+}

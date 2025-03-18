@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'screens/login.dart';
+import 'utils/storage.dart';
 
-void main() {
+void main() async {
+  await LocalStorage.init();
   runApp(const MyApp());
 }
 
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Auth',
+      title: 'Logo Game',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const LoginScreen(),
     );

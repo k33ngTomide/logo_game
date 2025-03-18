@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logo_game/utils/password_hasher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'signup.dart'; // Import SignupScreen
@@ -15,6 +16,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedIn();
+  }
+
+  Future<void> _checkLoggedIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? loggedInUser = prefs.getString('loggedInUser');
+
+    if (loggedInUser != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
+  }
+
   Future<void> _login() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> users = prefs.getStringList('users') ?? [];
@@ -23,11 +42,16 @@ class _LoginScreenState extends State<LoginScreen> {
     String password = _passwordController.text;
 
     bool isAuthenticated = users.any((user) {
-      Map<String, dynamic> userData = jsonDecode(user);
-      return (userData['email'] == email || userData['username'] == email) && userData['password'] == password;
+      final Map<String, dynamic> userData = jsonDecode(user);
+      if (userData.containsKey('email') && userData.containsKey('password')) {
+        return (userData['email'] == email || userData['username'] == email) &&
+            PasswordHasher.verifyPassword(password, userData['password']);
+      }
+      return false;
     });
 
     if (isAuthenticated) {
+      await prefs.setString('loggedInUser', email);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login successful!')),
       );

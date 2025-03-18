@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logo_game/utils/password_hasher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'login.dart'; // Import LoginScreen
@@ -16,27 +17,74 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> _saveUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> users = prefs.getStringList('users') ?? [];
+    final email = _emailController.text.trim();
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
 
-    Map<String, String> newUser = {
-      'email': _emailController.text,
-      'username': _usernameController.text,
-      'password': _passwordController.text,
-    };
+    if (email.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
 
-    users.add(jsonEncode(newUser)); // Convert to JSON string and store in list
-    await prefs.setStringList('users', users);
+    if (!email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid email address.')),
+      );
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Signup successful!')),
-    );
+    if (password.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 8 characters long.')),
+      );
+      return;
+    }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> users = prefs.getStringList('users') ?? [];
+
+      // Decode existing users
+      List<Map<String, String>> decodedUsers = users.map((user) {
+        return jsonDecode(user) as Map<String, String>;
+      }).toList();
+
+      // Check if user already exists
+      bool userExists = decodedUsers.any((user) => user['email'] == email);
+
+      if (userExists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User already exists! Please log in.')),
+        );
+        return;
+      }
+
+      Map<String, String> newUser = {
+        'email': email,
+        'username': username,
+        'password': PasswordHasher.hashPassword(password)
+      };
+
+      users.add(jsonEncode(newUser));
+      await prefs.setStringList('users', users);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Signup successful!')),
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
