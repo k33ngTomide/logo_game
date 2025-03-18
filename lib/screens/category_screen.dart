@@ -19,17 +19,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLogos();
     _loadAnsweredLogos();
+    
+    _loadLogos();
+
   }
 
   Future<void> _loadLogos() async {
-    final String jsonString = await rootBundle.loadString('assets/data/logos.json');
+    final String jsonString = await rootBundle.loadString('lib/assets/logos.json');
     final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+    print('Available categories: ${jsonData.keys}');
+    print('Selected category: ${widget.category}');
+    print('Logos found: ${jsonData[widget.category]}');
+
     setState(() {
       _logos = jsonData[widget.category] ?? [];
     });
   }
+
 
   Future<void> _loadAnsweredLogos() async {
     final prefs = await SharedPreferences.getInstance();

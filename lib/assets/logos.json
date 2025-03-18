@@ -1,13 +1,13 @@
 {
-  "food": [
+  "Food": [
     { "image": "https://example.com/mcdonalds.png", "answer": ["McDonald's"] },
     { "image": "https://example.com/kfc.png", "answer": ["KFC"] }
   ],
-  "tech": [
+  "Tech": [
     { "image": "https://example.com/apple.png", "answer": ["Apple"] },
     { "image": "https://example.com/microsoft.png", "answer": ["Microsoft"] }
   ],
-  "sport": [
+  "Sports": [
     {
       "image": "https://www.jetpunk.com/img/user-img/51/51cb1ce904-450.webp",
       "answer": ["Barcelona", "FCB", "Barca"]
