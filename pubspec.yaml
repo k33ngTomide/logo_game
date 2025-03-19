@@ -58,6 +58,8 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/logos.json
+    - lib/assets/correct.mp3
+    - lib/assets/wrong.mp3
     
     
   # The following line ensures that the Material Icons font is

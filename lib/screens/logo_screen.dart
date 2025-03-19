@@ -38,7 +38,7 @@ class _LogoScreenState extends State<LogoScreen> with TickerProviderStateMixin {
     bool isCorrect = correctAnswers.any((answer) => answer.toLowerCase() == userAnswer);
 
     if (isCorrect) {
-      _audioPlayer.play(AssetSource('audio/correct.mp3')); // ✅ Play correct sound
+      _audioPlayer.play(AssetSource('/assets/correct.mp3'));
       setState(() {
         _isCorrect = true;
       });
@@ -49,8 +49,8 @@ class _LogoScreenState extends State<LogoScreen> with TickerProviderStateMixin {
         _goToNextLogo();
       });
     } else {
-      _audioPlayer.play(AssetSource('audio/wrong.mp3')); // ❌ Play wrong sound
-      _animationController.forward(from: 0.0); // 🔄 Trigger shake animation
+      _audioPlayer.play(AssetSource('/assets/wrong.mp3'));
+      _animationController.forward(from: 0.0); 
 
       setState(() {
         _isCorrect = false;
@@ -103,13 +103,24 @@ class _LogoScreenState extends State<LogoScreen> with TickerProviderStateMixin {
               builder: (context, child) {
                 return Transform.translate(
                   offset: Offset(
-                    10 * (1 - _animationController.value * 2), // Shake effect
+                    10 * (1 - (_animationController.value * 2)), // Smooth shake effect
                     0,
                   ),
                   child: child,
                 );
               },
-              child: Image.network(logoImage, width: 200, height: 200),
+              child: Image.network(
+                logoImage,
+                width: 200,
+                height: 200,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child; // Fully loaded
+                  return Center(child: CircularProgressIndicator()); // Show loader
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.error, size: 50, color: Colors.red); // Show error icon if loading fails
+                },
+              ),
             ),
             const SizedBox(height: 20),
             Padding(
